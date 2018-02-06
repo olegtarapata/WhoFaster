@@ -1,0 +1,2 @@
+# WhoFaster
+Break myths
