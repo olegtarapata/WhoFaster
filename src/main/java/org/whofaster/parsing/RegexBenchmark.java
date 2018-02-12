@@ -3,7 +3,7 @@ package org.whofaster.parsing;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**
- * @author Oleg Tarapata (o.tarapata@epom.com)
+ * @author Oleg Tarapata (oleh.tarapata@gmail.com)
  */
 public class RegexBenchmark {
 
