@@ -10,26 +10,65 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import static java.util.UUID.randomUUID;
 
 /**
  * @author Oleg Tarapata (oleh.tarapata@gmail.com)
  */
+@Fork(value = 1)
+@BenchmarkMode(Mode.AverageTime)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 10, time = 1)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class RegexBenchmark {
 
     @Benchmark
-    @Fork(value = 1)
-    @BenchmarkMode(Mode.AverageTime)
-    @Warmup(iterations = 5, time = 1)
-    @Measurement(iterations = 10, time = 1)
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public boolean parseEmail(PatternHolder patternHolder) {
         return patternHolder.pattern.matcher("test@email.com").matches();
     }
 
+    @Benchmark
+    public String[] splitByRegex(PatternHolder patternHolder) {
+        return patternHolder.toParse.split(patternHolder.delimiter);
+    }
+
+    @Benchmark
+    public List<String> splitByIndexOf(PatternHolder patternHolder) {
+        final List<String> list = new ArrayList<>();
+        final String toParse = patternHolder.toParse;
+        final int length = toParse.length();
+        int index = 0;
+        while (index < length) {
+            final int nextIndex = toParse.indexOf(patternHolder.delimiter);
+            if (nextIndex < 0) {
+                list.add(toParse.substring(index, length));
+                break;
+            }
+            list.add(toParse.substring(index, nextIndex));
+            index = nextIndex;
+        }
+        return list;
+    }
+
     @State(Scope.Benchmark)
     public static class PatternHolder {
-        Pattern pattern = Pattern.compile(".*@.*\\..*");
+        final Pattern pattern = Pattern.compile(".*@.*\\..*");
+        final String delimiter = ",";
+        final String toParse;
+
+        public PatternHolder() {
+            final StringBuilder builder = new StringBuilder();
+            builder.append(randomUUID().toString());
+            for (int i = 0; i < 9; i++) {
+                builder.append(",");
+                builder.append(randomUUID().toString());
+            }
+            toParse = builder.toString();
+        }
     }
 }
