@@ -38,33 +38,36 @@ public class RegexBenchmark {
     }
 
     @Benchmark
-    public List<String> splitByIndexOf(PatternHolder patternHolder) {
-        final List<String> list = new ArrayList<>();
+    public String[] splitByIndexOf(PatternHolder patternHolder) {
+        final String[] result = new String[patternHolder.n];
+        int i = 0;
         final String toParse = patternHolder.toParse;
         final int length = toParse.length();
         int index = 0;
+        int nextIndex;
         while (index < length) {
-            final int nextIndex = toParse.indexOf(patternHolder.delimiter);
+            nextIndex = toParse.indexOf(patternHolder.delimiter, index);
             if (nextIndex < 0) {
-                list.add(toParse.substring(index, length));
-                break;
+                nextIndex = length;
             }
-            list.add(toParse.substring(index, nextIndex));
-            index = nextIndex;
+            result[i] = toParse.substring(index, nextIndex);
+            i++;
+            index = nextIndex + 1;
         }
-        return list;
+        return result;
     }
 
     @State(Scope.Benchmark)
     public static class PatternHolder {
         final Pattern pattern = Pattern.compile(".*@.*\\..*");
+        final int n = 10;
         final String delimiter = ",";
         final String toParse;
 
         public PatternHolder() {
             final StringBuilder builder = new StringBuilder();
             builder.append(randomUUID().toString());
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < n-1; i++) {
                 builder.append(",");
                 builder.append(randomUUID().toString());
             }
