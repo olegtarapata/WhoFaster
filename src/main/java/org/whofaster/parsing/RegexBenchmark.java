@@ -10,8 +10,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -67,7 +65,7 @@ public class RegexBenchmark {
         public PatternHolder() {
             final StringBuilder builder = new StringBuilder();
             builder.append(randomUUID().toString());
-            for (int i = 0; i < n-1; i++) {
+            for (int i = 0; i < n - 1; i++) {
                 builder.append(",");
                 builder.append(randomUUID().toString());
             }
