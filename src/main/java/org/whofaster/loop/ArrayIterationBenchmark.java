@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
  */
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 10, time = 1, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 5, time = 3)
+@Measurement(iterations = 10, time = 3)
 @Fork(1)
 @State(Scope.Benchmark)
-public class LoopBenchmark {
+public class ArrayIterationBenchmark {
 
     private int[] array;
 
@@ -38,16 +38,24 @@ public class LoopBenchmark {
     }
 
     @Benchmark
-    public void usualLoop(final Blackhole blackhole) {
-        for (int i = 0; i < 1000; i++) {
-            blackhole.consume(i);
+    public void arrayForiLoop(final Blackhole blackhole) {
+        for (int i = 0; i < array.length; i++) {
+            blackhole.consume(array[i]);
+        }
+    }
+
+    @Benchmark
+    public void arrayForiLoopWithCachedLength(final Blackhole blackhole) {
+        final int length = array.length;
+        for (int i = 0; i < length; i++) {
+            blackhole.consume(array[i]);
         }
     }
 
     @Benchmark
     public void arrayForeachLoop(final Blackhole blackhole) {
-        for (int anArray : array) {
-            blackhole.consume(anArray);
+        for (int element : array) {
+            blackhole.consume(element);
         }
     }
 
